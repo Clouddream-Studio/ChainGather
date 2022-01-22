@@ -34,21 +34,19 @@ mc.listen("onDestroyBlock", (pl, bl) => {
         let tag = pl.getHand().getNbt().getTag("tag");
         let have = false;
         if (tag != undefined) {
-            tag
-                .getData("ench")
-                .toArray()
-                .forEach((e) => {
-                    if (e.id == 16) {
-                        have = true;
-                    }
+            let ench = tag.getData("ench");
+            if (ench != undefined) {
+                ench.toArray().forEach((e) => {
+                    have = e.id == 16 ? true : have;
                 });
+            }
         }
         if (!have) {
-            mc.runcmdEx("gamerule sendcommandfeedback false");
             let count = destroy(pl, bl);
-            mc.runcmdEx("gamerule sendcommandfeedback true");
-            if (count > 0 && cost > 0) {
-                pl.tell(`本次挖掘了${count}个方块，消费${count * cost}元`);
+            if (count > 0) {
+                pl.tell(
+                    `本次挖掘了${count}个方块${cost > 0 ? `，消费${count * cost}元` : ""}`
+                );
             }
         }
     }
@@ -69,23 +67,19 @@ function destroy(pl, bl) {
             i == 2 ? bl.pos.z + j : bl.pos.z,
             bl.pos.dimid
         );
-        if (getMoney(pl) < cost || count >= maxChain) {
-            break;
-        }
         if (
-            nbl.type == bl.type &&
-            pl.runcmd(`setblock ${nbl.pos.x} ${nbl.pos.y} ${nbl.pos.z} air 0 destroy`)
+            nbl.type == bl.type && boardName == ""
+                ? money.reduce(pl.xuid, cost)
+                : pl.getScore(boardName) < cost
+                    ? false
+                    : pl.reduceScore(boardName, cost) &&
+                    mc.runcmdEx(
+                        `execute "${pl.name}" ${nbl.pos.x} ${nbl.pos.y} ${nbl.pos.z} setblock ~~~ air 0 destroy`
+                    ).success
         ) {
-            reduceMoney(pl, cost);
             count += destroy(pl, nbl) + 1;
         }
     }
     return count;
-}
-function getMoney(pl) {
-    return boardName == "" ? money.get(pl.xuid) : pl.getScore(boardName);
-}
-function reduceMoney(pl, m) {
-    boardName == "" ? money.reduce(pl.xuid, m) : pl.reduceScore(boardName, m);
 }
 log("Made by Clouddream Studio with ♥");
