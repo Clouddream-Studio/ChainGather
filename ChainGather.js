@@ -68,14 +68,15 @@ function destroy(pl, bl) {
             bl.pos.dimid
         );
         if (
-            nbl.type == bl.type && boardName == ""
+            nbl.type == bl.type &&
+            (boardName == ""
                 ? money.reduce(pl.xuid, cost)
                 : pl.getScore(boardName) < cost
                     ? false
-                    : pl.reduceScore(boardName, cost) &&
-                    mc.runcmdEx(
-                        `execute "${pl.name}" ${nbl.pos.x} ${nbl.pos.y} ${nbl.pos.z} setblock ~~~ air 0 destroy`
-                    ).success
+                    : pl.reduceScore(boardName, cost)) &&
+            mc.runcmdEx(
+                `execute "${pl.name}" ${nbl.pos.x} ${nbl.pos.y} ${nbl.pos.z} setblock ~~~ air 0 destroy`
+            ).success
         ) {
             count += destroy(pl, nbl) + 1;
         }
