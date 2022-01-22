@@ -29,17 +29,19 @@ let cost = conf.init("cost", 10);
 conf.close();
 let data = {};
 cost = cost < 0 ? 0 : cost;
-
 mc.listen("onDestroyBlock", (pl, bl) => {
-    if (data[pl.xuid] && pl.gameMode == 0 && oreList.indexOf(bl.type) >= 0) {
-        let ench = pl.getHand().getNbt().getTag("tag").getData("ench");
+    if (data[pl.xuid] && pl.gameMode == 0 && oreList.indexOf(bl.type) > -1) {
+        let tag = pl.getHand().getNbt().getTag("tag");
         let have = false;
-        if (ench != undefined) {
-            ench.toArray().forEach((e) => {
-                if (e.id == 16) {
-                    have = true;
-                }
-            });
+        if (tag != undefined) {
+            tag
+                .getData("ench")
+                .toArray()
+                .forEach((e) => {
+                    if (e.id == 16) {
+                        have = true;
+                    }
+                });
         }
         if (!have) {
             mc.runcmdEx("gamerule sendcommandfeedback false");
@@ -58,7 +60,6 @@ mc.regPlayerCmd(command, "设置连锁采集状态", (pl) => {
     data[pl.xuid] = data[pl.xuid] ? false : true;
     pl.tell(`连锁采集已${data[pl.xuid] ? "启用" : "禁用"}`);
 });
-
 function destroy(pl, bl) {
     let count = 0;
     for (let i = 0, j = 1; i < 3; i = j == -1 ? i + 1 : i, j = j == 1 ? -1 : 1) {
@@ -87,5 +88,4 @@ function getMoney(pl) {
 function reduceMoney(pl, m) {
     boardName == "" ? money.reduce(pl.xuid, m) : pl.reduceScore(boardName, m);
 }
-
 log("Made by Clouddream Studio with ♥");
