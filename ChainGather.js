@@ -1,6 +1,6 @@
 let conf = new JsonConfigFile("plugins\\ChainGather\\config.json");
 let blockList = conf.init("blockList", {
-    universal: [],
+    undefined: [],
     "minecraft:wooden_pickaxe": [
         "minecraft:coal_ore",
         "minecraft:quartz_ore",
@@ -95,70 +95,91 @@ let blockList = conf.init("blockList", {
 const command = conf.init("command", "cc");
 const boardName = conf.init("boardName", "");
 const maxChain = conf.init("maxChain", 25);
-let cost = conf.init("cost", 10);
+const durability = conf.init("durability", {
+    wooden: 59,
+    stone: 131,
+    iron: 250,
+    diamond: 1561,
+    netherite: 2031,
+});
 conf.close();
 let data = {};
-cost = cost < 0 ? 0 : cost;
+mc.regPlayerCmd(command, "设置连锁采集状态。", (pl) => {
+    data[pl.xuid] = data[pl.xuid] ? false : true;
+    pl.tell(`连锁采集已${data[pl.xuid] ? "启用" : "禁用"}`);
+});
+mc.listen("onJoin", (pl) => {
+    data[pl.xuid] = false;
+});
 mc.listen("onDestroyBlock", (pl, bl) => {
     let it = pl.getHand();
     if (
         data[pl.xuid] &&
-        pl.gameMode == 0 &&
+        pl.gameMode != 1 &&
         (blockList[it.type] == undefined
-            ? blockList["universal"]
+            ? blockList.undefined
             : blockList[it.type]
         ).indexOf(bl.type) > -1
     ) {
-        let tag = it.getNbt().getTag("tag");
         let have = false;
+        let nb = 100;
+        let md = 0;
+        let tag = it.getNbt().getTag("tag");
         if (tag != undefined) {
             let ench = tag.getData("ench");
             if (ench != undefined) {
                 ench.toArray().forEach((e) => {
                     have = e.id == 16 ? true : have;
+                    nb = e.id == 17 ? 100 / (e.lvl + 1) : nb;
                 });
             }
         }
+        Object.keys(durability).forEach((k) => {
+            if (new RegExp(k).test(it.type)) {
+                md = durability[k];
+            }
+        });
         if (!have) {
-            let count = destroy(pl, bl);
-            if (count > 0) {
-                pl.tell(
-                    `本次挖掘了${count}个方块${cost > 0 ? `，消费${count * cost}元` : ""}`
-                );
+            let co = 0;
+            destroy(pl, bl, it, nb, md, co);
+        }
+    }
+});
+function destroy(pl, bl, it, ub, md, co) {
+    for (let i = 0, j = 1; i < 3; i = j == -1 ? i + 1 : i, j = j == 1 ? -1 : 1) {
+        if (co < maxChain) {
+            let nbl = mc.getBlock(
+                i == 0 ? bl.pos.x + j : bl.pos.x,
+                i == 1 ? bl.pos.y + j : bl.pos.y,
+                i == 2 ? bl.pos.z + j : bl.pos.z,
+                bl.pos.dimid
+            );
+            if (
+                nbl.type == bl.type &&
+                mc.runcmdEx(
+                    `execute "${pl.name}" ${nbl.pos.x} ${nbl.pos.y} ${nbl.pos.z} setblock ~~~ air 0 destroy`
+                ).success
+            ) {
+                if (Math.floor(Math.random() * 99) < ub) {
+                    let nbt = it.getNbt();
+                    let tag = nbt.getTag("tag");
+                    if (tag != undefined) {
+                        let nd = tag.getData("Damage") + 1;
+                        tag.setInt("Damage", nd);
+                        if (nd < md) {
+                            it.setNbt(nbt);
+                        } else {
+                            it.setNull();
+                        }
+                        pl.refreshItems();
+                    } else if (pl.getHand().type != it.type) {
+                        break;
+                    }
+                }
+                co++;
+                destroy(pl, nbl, it, ub, md, co);
             }
         }
     }
-});
-mc.listen("onJoin", (pl) => {
-    data[pl.xuid] = false;
-});
-mc.regPlayerCmd(command, "设置连锁采集状态", (pl) => {
-    data[pl.xuid] = data[pl.xuid] ? false : true;
-    pl.tell(`连锁采集已${data[pl.xuid] ? "启用" : "禁用"}`);
-});
-function destroy(pl, bl) {
-    let count = 0;
-    for (let i = 0, j = 1; i < 3; i = j == -1 ? i + 1 : i, j = j == 1 ? -1 : 1) {
-        let nbl = mc.getBlock(
-            i == 0 ? bl.pos.x + j : bl.pos.x,
-            i == 1 ? bl.pos.y + j : bl.pos.y,
-            i == 2 ? bl.pos.z + j : bl.pos.z,
-            bl.pos.dimid
-        );
-        if (
-            nbl.type == bl.type &&
-            (boardName == ""
-                ? money.reduce(pl.xuid, cost)
-                : pl.getScore(boardName) < cost
-                    ? false
-                    : pl.reduceScore(boardName, cost)) &&
-            mc.runcmdEx(
-                `execute "${pl.name}" ${nbl.pos.x} ${nbl.pos.y} ${nbl.pos.z} setblock ~~~ air 0 destroy`
-            ).success
-        ) {
-            count += destroy(pl, nbl) + 1;
-        }
-    }
-    return count;
 }
 log("Made by Clouddream Studio with ♥");
