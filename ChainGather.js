@@ -1,118 +1,118 @@
 const conf = new JsonConfigFile("plugins\\ChainGather\\config.json");
-const command = conf.init("command", "cc");
-const boardName = conf.init("boardName", "");
+const command = conf.init("command", "chaingather");
 const blockList = conf.init("blockList", {
     undefined: {},
     empty: {},
     "minecraft:wooden_pickaxe": {
-        "minecraft:coal_ore": 25,
-        "minecraft:quartz_ore": 25,
-        "minecraft:nether_gold_ore": 25,
-        "minecraft:deepslate_coal_ore": 25,
+        "minecraft:coal_ore": 32,
+        "minecraft:quartz_ore": 32,
+        "minecraft:nether_gold_ore": 32,
+        "minecraft:deepslate_coal_ore": 32,
     },
     "minecraft:stone_pickaxe": {
-        "minecraft:iron_ore": 25,
-        "minecraft:lapis_ore": 25,
-        "minecraft:coal_ore": 25,
-        "minecraft:quartz_ore": 25,
-        "minecraft:nether_gold_ore": 25,
-        "minecraft:deepslate_iron_ore": 25,
-        "minecraft:deepslate_lapis_ore": 25,
-        "minecraft:deepslate_coal_ore": 25,
+        "minecraft:iron_ore": 32,
+        "minecraft:lapis_ore": 32,
+        "minecraft:coal_ore": 32,
+        "minecraft:quartz_ore": 32,
+        "minecraft:nether_gold_ore": 32,
+        "minecraft:deepslate_iron_ore": 32,
+        "minecraft:deepslate_lapis_ore": 32,
+        "minecraft:deepslate_coal_ore": 32,
     },
     "minecraft:iron_pickaxe": {
-        "minecraft:iron_ore": 25,
-        "minecraft:gold_ore": 25,
-        "minecraft:diamond_ore": 25,
-        "minecraft:lapis_ore": 25,
-        "minecraft:redstone_ore": 25,
-        "minecraft:lit_redstone_ore": 25,
-        "minecraft:coal_ore": 25,
-        "minecraft:copper_ore": 25,
-        "minecraft:emerald_ore": 25,
-        "minecraft:quartz_ore": 25,
-        "minecraft:nether_gold_ore": 25,
-        "minecraft:deepslate_iron_ore": 25,
-        "minecraft:deepslate_gold_ore": 25,
-        "minecraft:deepslate_diamond_ore": 25,
-        "minecraft:deepslate_lapis_ore": 25,
-        "minecraft:deepslate_redstone_ore": 25,
-        "minecraft:lit_deepslate_redstone_ore": 25,
-        "minecraft:deepslate_emerald_ore": 25,
-        "minecraft:deepslate_coal_ore": 25,
-        "minecraft:deepslate_copper_ore": 25,
+        "minecraft:iron_ore": 32,
+        "minecraft:gold_ore": 32,
+        "minecraft:diamond_ore": 32,
+        "minecraft:lapis_ore": 32,
+        "minecraft:redstone_ore": 32,
+        "minecraft:lit_redstone_ore": 32,
+        "minecraft:coal_ore": 32,
+        "minecraft:copper_ore": 32,
+        "minecraft:emerald_ore": 32,
+        "minecraft:quartz_ore": 32,
+        "minecraft:nether_gold_ore": 32,
+        "minecraft:deepslate_iron_ore": 32,
+        "minecraft:deepslate_gold_ore": 32,
+        "minecraft:deepslate_diamond_ore": 32,
+        "minecraft:deepslate_lapis_ore": 32,
+        "minecraft:deepslate_redstone_ore": 32,
+        "minecraft:lit_deepslate_redstone_ore": 32,
+        "minecraft:deepslate_emerald_ore": 32,
+        "minecraft:deepslate_coal_ore": 32,
+        "minecraft:deepslate_copper_ore": 32,
     },
     "minecraft:diamond_pickaxe": {
-        "minecraft:iron_ore": 25,
-        "minecraft:gold_ore": 25,
-        "minecraft:diamond_ore": 25,
-        "minecraft:lapis_ore": 25,
-        "minecraft:redstone_ore": 25,
-        "minecraft:lit_redstone_ore": 25,
-        "minecraft:coal_ore": 25,
-        "minecraft:copper_ore": 25,
-        "minecraft:emerald_ore": 25,
-        "minecraft:quartz_ore": 25,
-        "minecraft:nether_gold_ore": 25,
-        "minecraft:ancient_debris": 25,
-        "minecraft:deepslate_iron_ore": 25,
-        "minecraft:deepslate_gold_ore": 25,
-        "minecraft:deepslate_diamond_ore": 25,
-        "minecraft:deepslate_lapis_ore": 25,
-        "minecraft:deepslate_redstone_ore": 25,
-        "minecraft:lit_deepslate_redstone_ore": 25,
-        "minecraft:deepslate_emerald_ore": 25,
-        "minecraft:deepslate_coal_ore": 25,
-        "minecraft:deepslate_copper_ore": 25,
+        "minecraft:iron_ore": 32,
+        "minecraft:gold_ore": 32,
+        "minecraft:diamond_ore": 32,
+        "minecraft:lapis_ore": 32,
+        "minecraft:redstone_ore": 32,
+        "minecraft:lit_redstone_ore": 32,
+        "minecraft:coal_ore": 32,
+        "minecraft:copper_ore": 32,
+        "minecraft:emerald_ore": 32,
+        "minecraft:quartz_ore": 32,
+        "minecraft:nether_gold_ore": 32,
+        "minecraft:ancient_debris": 32,
+        "minecraft:deepslate_iron_ore": 32,
+        "minecraft:deepslate_gold_ore": 32,
+        "minecraft:deepslate_diamond_ore": 32,
+        "minecraft:deepslate_lapis_ore": 32,
+        "minecraft:deepslate_redstone_ore": 32,
+        "minecraft:lit_deepslate_redstone_ore": 32,
+        "minecraft:deepslate_emerald_ore": 32,
+        "minecraft:deepslate_coal_ore": 32,
+        "minecraft:deepslate_copper_ore": 32,
     },
     "minecraft:netherite_pickaxe": {
-        "minecraft:iron_ore": 25,
-        "minecraft:gold_ore": 25,
-        "minecraft:diamond_ore": 25,
-        "minecraft:lapis_ore": 25,
-        "minecraft:redstone_ore": 25,
-        "minecraft:lit_redstone_ore": 25,
-        "minecraft:coal_ore": 25,
-        "minecraft:copper_ore": 25,
-        "minecraft:emerald_ore": 25,
-        "minecraft:quartz_ore": 25,
-        "minecraft:nether_gold_ore": 25,
-        "minecraft:ancient_debris": 25,
-        "minecraft:deepslate_iron_ore": 25,
-        "minecraft:deepslate_gold_ore": 25,
-        "minecraft:deepslate_diamond_ore": 25,
-        "minecraft:deepslate_lapis_ore": 25,
-        "minecraft:deepslate_redstone_ore": 25,
-        "minecraft:lit_deepslate_redstone_ore": 25,
-        "minecraft:deepslate_emerald_ore": 25,
-        "minecraft:deepslate_coal_ore": 25,
-        "minecraft:deepslate_copper_ore": 25,
+        "minecraft:iron_ore": 32,
+        "minecraft:gold_ore": 32,
+        "minecraft:diamond_ore": 32,
+        "minecraft:lapis_ore": 32,
+        "minecraft:redstone_ore": 32,
+        "minecraft:lit_redstone_ore": 32,
+        "minecraft:coal_ore": 32,
+        "minecraft:copper_ore": 32,
+        "minecraft:emerald_ore": 32,
+        "minecraft:quartz_ore": 32,
+        "minecraft:nether_gold_ore": 32,
+        "minecraft:ancient_debris": 32,
+        "minecraft:deepslate_iron_ore": 32,
+        "minecraft:deepslate_gold_ore": 32,
+        "minecraft:deepslate_diamond_ore": 32,
+        "minecraft:deepslate_lapis_ore": 32,
+        "minecraft:deepslate_redstone_ore": 32,
+        "minecraft:lit_deepslate_redstone_ore": 32,
+        "minecraft:deepslate_emerald_ore": 32,
+        "minecraft:deepslate_coal_ore": 32,
+        "minecraft:deepslate_copper_ore": 32,
     },
     "minecraft:golden_pickaxe": {
-        "minecraft:coal_ore": 25,
-        "minecraft:quartz_ore": 25,
-        "minecraft:nether_gold_ore": 25,
-        "minecraft:deepslate_coal_ore": 25,
+        "minecraft:coal_ore": 32,
+        "minecraft:quartz_ore": 32,
+        "minecraft:nether_gold_ore": 32,
+        "minecraft:deepslate_coal_ore": 32,
     },
     "minecraft:wooden_axe": {
-        "minecraft:log": 25,
+        "minecraft:log": 32,
     },
     "minecraft:stone_axe": {
-        "minecraft:log": 25,
+        "minecraft:log": 32,
     },
     "minecraft:iron_axe": {
-        "minecraft:log": 25,
+        "minecraft:log": 32,
     },
     "minecraft:diamond_axe": {
-        "minecraft:log": 25,
+        "minecraft:log": 32,
     },
     "minecraft:netherite_axe": {
-        "minecraft:log": 25,
+        "minecraft:log": 32,
     },
     "minecraft:golden_axe": {
-        "minecraft:log": 25,
+        "minecraft:log": 32,
     },
 });
+conf.close();
 const durability = {
     wooden: 59,
     stone: 131,
@@ -120,11 +120,12 @@ const durability = {
     diamond: 1561,
     netherite: 2031,
 };
-conf.close();
 let data = {};
 mc.regPlayerCmd(command, "设置连锁采集状态。", (pl) => {
-    data[pl.xuid] = data[pl.xuid] ? false : true;
-    pl.tell(`连锁采集已${data[pl.xuid] ? "启用" : "禁用"}`);
+    pl.tell(
+        `连锁采集已${(data[pl.xuid] = data[pl.xuid] ? false : true) ? "启用" : "禁用"
+        }`
+    );
 });
 mc.listen("onJoin", (pl) => {
     data[pl.xuid] = false;
@@ -134,7 +135,7 @@ mc.listen("onDestroyBlock", (pl, bl) => {
     let mx = (
         it.isNull()
             ? blockList.empty
-            : blockList[it.type] == undefined
+            : !blockList[it.type]
                 ? blockList.undefined
                 : blockList[it.type]
     )[bl.type];
@@ -143,9 +144,9 @@ mc.listen("onDestroyBlock", (pl, bl) => {
         let nb = 100;
         let md = 0;
         let tag = it.getNbt().getTag("tag");
-        if (tag != undefined) {
+        if (tag) {
             let ench = tag.getData("ench");
-            if (ench != undefined) {
+            if (ench) {
                 ench.toArray().forEach((e) => {
                     have = e.id == 16 ? e.id : have;
                     nb = e.id == 17 ? 100 / (e.lvl + 1) : nb;
@@ -163,7 +164,7 @@ mc.listen("onDestroyBlock", (pl, bl) => {
         }
     }
 });
-function destroy(pl, bl, it, ub, md, co, mx) {
+function destroy(pl, bl, it, nb, md, co, mx) {
     for (let i = 0, j = 1; i < 3; i = j == -1 ? i + 1 : i, j = j == 1 ? -1 : 1) {
         if (co < mx) {
             let nbl = mc.getBlock(
@@ -178,10 +179,10 @@ function destroy(pl, bl, it, ub, md, co, mx) {
                     `execute "${pl.name}" ${nbl.pos.x} ${nbl.pos.y} ${nbl.pos.z} setblock ~~~ air 0 destroy`
                 ).success
             ) {
-                if (Math.floor(Math.random() * 99) < ub) {
+                if (Math.floor(Math.random() * 99) < nb) {
                     let nbt = it.getNbt();
                     let tag = nbt.getTag("tag");
-                    if (tag != undefined) {
+                    if (tag) {
                         let nd = tag.getData("Damage") + 1;
                         tag.setInt("Damage", nd);
                         if (nd < md) {
@@ -190,14 +191,11 @@ function destroy(pl, bl, it, ub, md, co, mx) {
                             it.setNull();
                         }
                         pl.refreshItems();
-                    } else if (pl.getHand().type != it.type) {
-                        break;
                     }
                 }
                 co++;
-                destroy(pl, nbl, it, ub, md, co, mx);
+                destroy(pl, nbl, it, nb, md, co, mx);
             }
         }
     }
 }
-log("Made by Clouddream Studio with ♥");
