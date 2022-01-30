@@ -139,10 +139,9 @@ mc.listen("onDestroyBlock", (pl, bl) => {
                 ? blockList.undefined
                 : blockList[it.type]
     )[bl.type];
-    if (data[pl.xuid] && pl.gameMode != 1 && mx) {
+    if (data[pl.xuid] && pl.gameMode != 1 && mx > 0) {
         let have = 0;
         let nb = 100;
-        let md = 0;
         let tag = it.getNbt().getTag("tag");
         if (tag) {
             let ench = tag.getData("ench");
@@ -153,18 +152,19 @@ mc.listen("onDestroyBlock", (pl, bl) => {
                 });
             }
         }
+        let md = 0;
         Object.keys(durability).forEach((k) => {
             if (new RegExp(k).test(it.type)) {
                 md = durability[k];
             }
         });
         if (!have) {
-            let co = 0;
             destroy(pl, bl, it, nb, md, co, mx);
         }
     }
 });
-function destroy(pl, bl, it, nb, md, co, mx) {
+function destroy(pl, bl, it, nb, md, mx) {
+    let co = 0;
     for (let i = 0, j = 1; i < 3; i = j == -1 ? i + 1 : i, j = j == 1 ? -1 : 1) {
         if (co < mx) {
             let nbl = mc.getBlock(
@@ -193,9 +193,9 @@ function destroy(pl, bl, it, nb, md, co, mx) {
                         pl.refreshItems();
                     }
                 }
-                co++;
-                destroy(pl, nbl, it, nb, md, co, mx);
+                co += destroy(pl, nbl, it, nb, md, mx);
             }
         }
     }
+    return co;
 }
