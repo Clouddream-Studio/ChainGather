@@ -1,5 +1,6 @@
 const conf = new JsonConfigFile("plugins\\ChainGather\\config.json");
 const command = conf.init("command", "chaingather");
+const defaultState = conf.init("defaultState", false);
 const blockList = conf.init("blockList", {
     undefined: {},
     empty: {},
@@ -120,82 +121,98 @@ const durability = {
     diamond: 1561,
     netherite: 2031,
 };
-let data = {};
-mc.regPlayerCmd(command, "设置连锁采集状态。", (pl) => {
-    pl.tell(
-        `连锁采集已${(data[pl.xuid] = data[pl.xuid] ? false : true) ? "启用" : "禁用"
-        }`
-    );
+let db = {};
+mc.listen("onServerStarted", () => {
+    let cmd = mc.newCommand(command, "设置连锁采集状态。", PermType.Any);
+    cmd.overload();
+    cmd.setCallback((_, ori) => {
+        ori.player.tell(
+            `连锁采集已${
+                (db[pl.xuid] = db[pl.xuid] ? false : true) ? "启用" : "禁用"
+            }`
+        );
+    });
+    cmd.setup();
 });
 mc.listen("onJoin", (pl) => {
-    data[pl.xuid] = false;
+    db[pl.xuid] = defaultState;
 });
-mc.listen("onDestroyBlock", (pl, bl) => {
-    let it = pl.getHand();
-    let mx = (
-        it.isNull()
+mc.listen("onDestroyBlock", (player, block) => {
+    let item = player.getHand();
+    let maxChain = (
+        item.isNull()
             ? blockList.empty
-            : !blockList[it.type]
-                ? blockList.undefined
-                : blockList[it.type]
-    )[bl.type];
-    if (data[pl.xuid] && pl.gameMode != 1 && mx > 0) {
-        let have = 0;
-        let nb = 100;
-        let tag = it.getNbt().getTag("tag");
-        if (tag) {
-            let ench = tag.getData("ench");
-            if (ench) {
-                ench.toArray().forEach((e) => {
-                    have = e.id == 16 ? e.id : have;
-                    nb = e.id == 17 ? 100 / (e.lvl + 1) : nb;
-                });
-            }
-        }
-        let md = 0;
-        Object.keys(durability).forEach((k) => {
-            if (new RegExp(k).test(it.type)) {
-                md = durability[k];
-            }
-        });
-        if (!have) {
-            destroy(pl, bl, it, nb, md, co, mx);
-        }
+            : !blockList[item.type]
+            ? blockList.undefined
+            : blockList[item.type]
+    )[block.type];
+    if (!db[player.xuid] || player.gameMode == 1 || maxChain < 1) {
+        return;
     }
+    let tag = item.getNbt().getTag("tag");
+    if (!tag) {
+        return;
+    }
+    let ench = tag.getData("ench");
+    if (!ench) {
+        return;
+    }
+    let haveSilk = 0;
+    let unbreaking = 100;
+    ench.toArray().forEach((e) => {
+        haveSilk = e.id == 16 ? e.id : haveSilk;
+        unbreaking = e.id == 17 ? 100 / (e.lvl + 1) : unbreaking;
+    });
+    if (!haveSilk) {
+        return;
+    }
+    let lessDurability = 100;
+    Object.keys(durability).forEach((k) => {
+        if (new RegExp(k).test(item.type)) {
+            lessDurability = durability[k];
+        }
+    });
+    destroy(player, block, item, unbreaking, lessDurability, maxChain);
 });
-function destroy(pl, bl, it, nb, md, mx) {
-    let co = 0;
-    for (let i = 0, j = 1; i < 3; i = j == -1 ? i + 1 : i, j = j == 1 ? -1 : 1) {
-        if (co < mx) {
-            let nbl = mc.getBlock(
-                i == 0 ? bl.pos.x + j : bl.pos.x,
-                i == 1 ? bl.pos.y + j : bl.pos.y,
-                i == 2 ? bl.pos.z + j : bl.pos.z,
-                bl.pos.dimid
-            );
-            if (
-                nbl.type == bl.type &&
-                mc.runcmdEx(
-                    `execute "${pl.name}" ${nbl.pos.x} ${nbl.pos.y} ${nbl.pos.z} setblock ~~~ air 0 destroy`
-                ).success
-            ) {
-                if (Math.floor(Math.random() * 99) < nb) {
-                    let nbt = it.getNbt();
-                    let tag = nbt.getTag("tag");
-                    if (tag) {
-                        let nd = tag.getData("Damage") + 1;
-                        tag.setInt("Damage", nd);
-                        if (nd < md) {
-                            it.setNbt(nbt);
-                        } else {
-                            it.setNull();
-                        }
-                        pl.refreshItems();
+function destroy(player, block, item, unbreaking, lessDurability, maxChain) {
+    for (
+        let i = 0, j = 1;
+        i < 3;
+        i = j == -1 ? i + 1 : i, j = j == 1 ? -1 : 1
+    ) {
+        if (chainCount >= maxChain) {
+            return;
+        }
+        let nextBlock = mc.getBlock(
+            i == 0 ? block.pos.x + j : block.pos.x,
+            i == 1 ? block.pos.y + j : block.pos.y,
+            i == 2 ? block.pos.z + j : block.pos.z,
+            block.pos.dimid
+        );
+        if (item.isNull()) {
+            return;
+        }
+        if (
+            nextBlock.type == block.type &&
+            mc.runcmdEx(
+                `execute "${player.name}" ${nextBlock.pos.x} ${nextBlock.pos.y} ${nextBlock.pos.z} setblock ~~~ air 0 destroy`
+            ).success
+        ) {
+            if (Math.floor(Math.random() * 99) < unbreaking) {
+                let nbt = item.getNbt();
+                let tag = nbt.getTag("tag");
+                if (tag) {
+                    let newDurability = tag.getData("Damage") + 1;
+                    tag.setInt("Damage", newDurability);
+                    if (newDurability < lessDurability) {
+                        item.setNbt(nbt);
+                    } else {
+                        item.setNull();
                     }
+                    player.refreshItems();
                 }
-                co += destroy(pl, nbl, it, nb, md, mx);
             }
         }
+        destroy(player, nextBlock, item, unbreaking, lessDurability, maxChain);
     }
-    return co;
 }
